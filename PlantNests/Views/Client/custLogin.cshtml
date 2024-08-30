@@ -1,0 +1,205 @@
+﻿
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<style>
+
+    .form-group small {
+        color: var(--error-color);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        visibility: hidden;
+    }
+
+    .form-group.success input {
+        border-color: var(--succes-color);
+    }
+
+    .form-group.error input {
+        border-color: var(--error-color);
+    }
+
+    .form-group.error small {
+        visibility: visible;
+    }
+
+    .borderform {
+        border-radius: 50px;
+        padding: 30px;
+    }
+
+    .btn btn-primary {
+        border-radius: 20px;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+    }
+</style>
+
+
+<div class="breadcrumb-area">
+    <!-- Top Breadcrumb Area -->
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url('/Clientsite/img/bg-img/24.jpg');">
+        <h2>Login</h2>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Home","Client")"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Login</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ##### Breadcrumb Area End ##### -->
+<!-- ##### Checkout Area Start ##### -->
+<div class="checkout_area mb-100">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-12 col-lg-7">
+                <div class="checkout_details_area clearfix">
+                    <form method="post" asp-action="custLogin" id="form">
+                        <div class="row">
+             
+                            <div class="col-12 mb-4 form-group">
+                                <label for="email_address">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email"><br />
+                                <small style="color:red;">Error Message</small>
+                            </div>
+                            <div class="col-12 mb-4 form-group">
+                                <label for="password">Password *</label>
+                                <input type="password" class="form-control" id="password" name="password"><br />
+                                <small style="color:red;">Error Message</small>
+                            </div>
+                 
+                        </div>
+                        <div class="checkout-btn mt-30">
+                            <button type="button" class="btn alazea-btn w-100" onclick="submitForm()">Place Order</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <div class="checkout-content">
+             @if (Model == null || Model.Count == 0)
+            {
+
+            }
+            else
+            {
+                    <h5 class="title--">Your Order</h5>
+                    <div class="products">
+                        <div class="products-data">
+                            <h5>Products:</h5>
+                            <div class="single-products d-flex justify-content-between align-items-center">
+                                <p>Recuerdos Plant</p>
+                                <h5>$9.99</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="subtotal d-flex justify-content-between align-items-center">
+                        <h5>Subtotal</h5>
+                        <h5>$9.99</h5>
+                    </div>
+                    <div class="shipping d-flex justify-content-between align-items-center">
+                        <h5>Shipping</h5>
+                        <h5>$3.00</h5>
+                    </div>
+                    <div class="order-total d-flex justify-content-between align-items-center">
+                        <h5>Order Total</h5>
+                        <h5>$12.99</h5>
+                    </div>
+                    }
+                    @*<div class="checkout-btn mt-30">
+                        <button type="button" class="btn alazea-btn w-100" onclick="submitForm()">Place Order</button>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+function submitForm() {
+    const form = document.getElementById('form'); // Correct ID here
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+
+    // Reset form state
+    resetState([email, password]);
+
+    let isValid = true;
+
+    // Email Validation
+    if (email.value.trim() === '') {
+        showError(email, 'Email is required');
+        isValid = false;
+    } else if (!isValidEmail(email.value.trim())) {
+        showError(email, 'Please enter a valid email address');
+        isValid = false;
+    } else {
+        showSuccess(email);
+    }
+
+    // Password Validation
+    if (password.value.trim() === '') {
+        showError(password, 'Password is required');
+        isValid = false;
+    } else if (password.value.trim().length < 10) {
+        showError(password, 'Password must be at least 10 characters');
+        isValid = false;
+    } else {
+        showSuccess(password);
+    }
+
+    // Submit form if valid
+    if (isValid) {
+        form.submit();
+    }
+}
+
+// Show error message
+function showError(input, message) {
+    const formGroup = input.parentElement;
+    formGroup.classList.add('error');
+    const small = formGroup.querySelector('small');
+    small.innerText = message;
+}
+
+// Show success state
+function showSuccess(input) {
+    const formGroup = input.parentElement;
+    formGroup.classList.add('success');
+}
+
+// Reset form state
+function resetState(inputs) {
+    inputs.forEach(input => {
+        const formGroup = input.parentElement;
+        formGroup.classList.remove('error');
+        formGroup.classList.remove('success');
+        const small = formGroup.querySelector('small');
+        small.innerText = '';
+    });
+}
+
+// Email validation regex
+function isValidEmail(email) {
+    const re = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+    return re.test(email);
+}
+</script>
+

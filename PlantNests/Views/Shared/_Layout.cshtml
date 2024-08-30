@@ -1,0 +1,197 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<!-- Mirrored from www.urbanui.com/melody/template/pages/forms/basic_elements.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 15 Sep 2018 06:07:32 GMT -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Plants</title>
+    <link rel="stylesheet" href="~/Adminsite/vendors/iconfonts/font-awesome/css/all.min.css">
+    <link rel="stylesheet" href="~/Adminsite/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="~/Adminsite/vendors/css/vendor.bundle.addons.css">
+    <link rel="stylesheet" href="~/Adminsite/css/style.css">
+    <link rel="shortcut icon" href="http://www.urbanui.com/">
+</head>
+<body>
+    <div class="container-scroller">
+
+        <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row default-layout-navbar">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center pt-3">
+                <a class="navbar-brand brand-logo" href="index-2.html"><img src="~/Adminsite/images/logo.svg" alt="logo" /></a>
+                <a class="navbar-brand brand-logo-mini" href="index-2.html"><img src="~/Adminsite/images/logo-mini.svg" alt="logo" /></a>
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-stretch">
+                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                    <span class="fas fa-bars"></span>
+                </button>
+                <ul class="navbar-nav">
+                    <li class="nav-item nav-search d-none d-md-flex">
+                        <div class="nav-link">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" placeholder="Search" aria-label="Search">
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="navbar-nav navbar-nav-right">
+                  
+                    <li class="nav-item nav-profile dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+                            <img src="~/Adminsite/images/faces/face5.jpg" alt="profile" />
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+                            <a class="dropdown-item">
+                                <i class="fas fa-cog text-primary"></i>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item">
+                                        <i class="fas fa-power-off text-primary"></i>
+                                        <a asp-action="Logout" asp-controller="Admin" class="btn btn-primary">LogOut</a>
+                                    </a>
+                                }
+                                else
+                                {
+                                  <a asp-action="Login" asp-controller="Admin" class="btn btn-primary">Login</a>
+                                    <a asp-action="Login" asp-controller="Admin" class="btn btn-primary">Signup</a>
+                                }
+                            </a>
+                     @*       <div class="dropdown-divider"></div>
+                            <a class="dropdown-item">
+                                <i class="fas fa-power-off text-primary"></i>
+                                Logout
+                            </a>*@
+                            
+                        </div>
+                    </li>
+                   
+                </ul>
+                
+            </div>
+        </nav>
+
+
+        <div class="container-fluid page-body-wrapper">
+           
+            
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <ul class="nav">
+                    <li class="nav-item nav-profile">
+                        <div class="nav-link">
+                            <div class="profile-image">
+                                <img src="~/Adminsite/images/faces/face5.jpg" alt="image" />
+                            </div>
+                            <div class="profile-name">
+                                <p class="name">
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <h5>Welcom To @User.Identity.Name</h5>
+                                    }
+                               
+                                </p>
+                                <p class="designation">
+                                   
+                                </p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index","Home")">
+                            <i class="fa fa-home menu-icon"></i>
+                            <span class="menu-title">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index","Admin")">
+                            <i class="fa fa-puzzle-piece menu-icon"></i>
+                            <span class="menu-title">UserList</span>
+                        </a>
+                    </li>
+        
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                            <i class="far fa-compass menu-icon"></i>
+                            <span class="menu-title">ProducType</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-basic">
+                            <ul class="nav flex-column sub-menu">
+                                
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("Index","Product")">CategoryList</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("productIndex","Product")">ProductList</a></li>
+                              
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#ui-advanced" aria-expanded="false" aria-controls="ui-advanced">
+                            <i class="fas fa-clipboard-list menu-icon"></i>
+                            <span class="menu-title">Customer</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-advanced">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("OrderList","Product")">OrderList</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("reviewlist","Product")">Review</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("Inventory","Product")">Stock</a></li>
+
+                                <li class="nav-item"> <a class="nav-link" href="@Url.Action("SoldProduct","Product")">SoldProduct</a></li>
+
+
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                            <i class="fab fa-wpforms menu-icon"></i>
+                            <span class="menu-title">Form elements</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="form-elements">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"><a class="nav-link" href="basic_elements.html">Basic Elements</a></li>
+                                <li class="nav-item"><a class="nav-link" href="advanced_elements.html">Advanced Elements</a></li>
+                                <li class="nav-item"><a class="nav-link" href="validation.html">Validation</a></li>
+                                <li class="nav-item"><a class="nav-link" href="wizard.html">Wizard</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                   
+                </ul>
+            </nav>
+
+            <!-- main-panel ends -->
+
+            <div class="container-fluid">
+
+                @RenderBody()
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2018. All rights reserved.</span>
+                        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="far fa-heart text-danger"></i></span>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
+
+        <script src="~/Adminsite/vendors/js/vendor.bundle.base.js"></script>
+        <script src="~/Adminsite/vendors/js/vendor.bundle.addons.js"></script>
+        <script src="~/Adminsite/js/off-canvas.js"></script>
+        <script src="~/Adminsite/js/hoverable-collapse.js"></script>
+        <script src="~/Adminsite/js/misc.js"></script>
+        <script src="~/Adminsite/js/settings.js"></script>
+        <script src="~/Adminsite/js/todolist.js"></script>
+        <script src="~/Adminsite/js/dashboard.js"></script>
+
+
+
+
+
+</body>
+</html>

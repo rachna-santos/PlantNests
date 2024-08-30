@@ -1,0 +1,95 @@
+﻿@model List<PlantNests.Models.ShoppingCart>
+@{
+    ViewData["Title"] = "CheckOut";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+<!-- ##### Breadcrumb Area Start ##### -->
+<div class="breadcrumb-area">
+    <!-- Top Breadcrumb Area -->
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url('/Clientsite/img/bg-img/24.jpg');">
+        <h2>Cart</h2>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Home","Client")"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Cart</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ##### Breadcrumb Area End ##### -->
+<!-- ##### Cart Area Start ##### -->
+<div class="cart-area section-padding-0-100 clearfix">
+    <div class="container">
+        <div class="row">
+                <div class="col-12">
+                    <div class="cart-table clearfix">
+                        <table class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Image</th>
+                                    <th>TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                        @if (Model != null && Model.Count > 0)
+                            {
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                      
+                                        <td class="qty">
+                                            @item.qty                                         
+                                        </td>
+                                        <td class="price"><span>$@item.price</span></td>
+                                        <td class="cart_product_img">
+                                            <img src="~/@item.image" alt="" style="width: 50px;">
+
+                                        </td>
+                                        <td class="bill">
+                                            @item.bill
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            
+            
+        </div>
+           @if (Model != null && Model.Count > 0)
+        {
+            <div class="row">
+
+                <!-- Cart Totals -->
+                <div class="col-12 col-lg-6">
+                    <div class="cart-totals-area mt-70">
+                        <h5 class="title--">Cart Total</h5>
+                        <div class="total d-flex justify-content-between">
+                            <h5>Total</h5>
+                            <h5>@ViewBag.bill</h5>
+                        </div>
+                        <div class="checkout-btn">
+                            <a href="@Url.Action("OrderPlace","Client")" class="btn alazea-btn w-100">PROCEED TO CHECKOUT</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <h4>No data available</h4>
+        }
+    </div>
+</div>
+<!-- ##### Cart Area End ##### -->

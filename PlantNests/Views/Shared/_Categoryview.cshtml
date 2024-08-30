@@ -1,0 +1,17 @@
+﻿
+<h4 class="widget-title">Categories</h4>
+<div class="widget-desc">
+    <div class="custom-control custom-checkbox d-flex align-items-center mb-2">
+        <input type="checkbox" class="custom-control-input" id="customCheck1">
+        <label class="custom-control-label" for="customCheck1">All plants <span class="text-muted">(@ViewBag.total )</span></label>
+
+    </div>
+    @foreach (var item in ViewBag.groupcategory)
+    {
+        <div class="custom-control custom-checkbox d-flex align-items-center mb-2">
+            <input type="checkbox" name="categories" value="@item.catId" class="custom-control-input" id="customChecks-@item.catId">
+            <label class="custom-control-label" for="customChecks-@item.catId">@item.catName <span class="text-muted">@item.Count</span></label>
+        </div>
+    }
+
+</div>

@@ -1,0 +1,147 @@
+﻿@model List<PlantNests.Models.Order>
+@{
+    ViewData["Title"] = "OrderList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>PlantNeats</title>
+    <link rel="stylesheet" href="~/Adminsite/vendors/iconfonts/font-awesome/css/all.min.css">
+    <link rel="stylesheet" href="~/Adminsite/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="~/Adminsite/vendors/css/vendor.bundle.addons.css">
+    <link rel="stylesheet" href="~/Adminsite/css/style.css">
+    <link rel="shortcut icon" href="http://www.urbanui.com/">
+</head>
+<body>
+    <div class="container-fluid page-body-wrapper">
+        <div class="main-panel" style="width:100%">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h3 class="page-title">
+                        Order List 
+                    </h3>
+                    <form>
+                        <div class="row">
+                            <div class="">
+                                <input name="term" class="form-control" placeholder="search bar" />
+                            </div>
+                            <div class="">
+                                <button type="submit" class="btn btn-primary mt-1 ml-2">search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="row">
+                    <div class="col-12 grid-margin">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="table-sorter-wrapper col-lg-12 table-responsive">
+                                        <table id="sortable-table-1" class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="sortStyle">Email</th>
+                                                    <th class="sortStyle">ProductName</th>
+
+                                                    <th class="sortStyle">Ordernumber</th>
+                                                    <th class="sortStyle">qty</th>
+                                                    <th class="sortStyle">Status</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var user in Model)
+                                                {
+                                                    <tr>
+
+                                                        
+                                                        <td>@user.Customer.Email</td>
+                                                        <td>@user.Product.productName</td>
+                                                        <td>@user.ordernumber</td>
+                                                        <td>@user.totalamount</td>
+                                                        <td>@user.Status</td>
+                                                        <td>
+                                                        <input type="submit" value="Accepted" class="btn btn-success" onclick="acceptedorder(@user.OrderId,event)" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="submit" value="Deliverd" class="btn btn-danger" onclick="acceptedorder(@user.OrderId,event)" />
+                                                        </td>
+                                                        @*         <td>
+                                                    <form asp-action="Delete" asp-route-id="@user.Id" method="post">
+                                                    <input type="submit" class="btn btn-primary" value="Delete" onclick="return confirm('are you show you want to delete data')" />
+                                                    </form>
+                                                    </td>*@
+                                                    </tr>
+                                                }
+
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+
+<!-- Mirrored from www.urbanui.com/melody/template/pages/tables/data-table.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 15 Sep 2018 06:08:41 GMT -->
+</html>
+<script src="https://common.olemiss.edu/_js/sweet-alert/sweet-alert.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://common.olemiss.edu/_js/sweet-alert/sweet-alert.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    var selectedid;
+    function acceptedorder(id, event) {
+        event.preventDefault();
+        selectedid = id;
+        $.ajax({
+            type: 'POST',
+            url: '/Product/Orderview',
+            data: { id: selectedid },
+            success: function (result) {
+                swal('Good job!', 'Order is Accepted!', 'success');
+                setTimeout(function () {
+                    console.log("selectedid", selectedid);
+                    location.reload();
+                }, 4000)
+            },
+            error: function () {
+                alert('failed to data');
+            }
+        });
+    }
+    var selectedid;
+    function acceptedorder(id, event) {
+        event.preventDefault();
+        selectedid = id;
+        $.ajax({
+            type: 'POST',
+            url: '/Product/Deliver',
+            data: { id: selectedid },
+            success: function (result) {
+                swal('Good job!', 'Order is Accepted!', 'success');
+                setTimeout(function () {
+                    console.log("selectedid", selectedid);
+                    location.reload();
+                }, 4000)
+            },
+            error: function () {
+                alert('failed to data');
+            }
+        });
+    }
+    </script>
+

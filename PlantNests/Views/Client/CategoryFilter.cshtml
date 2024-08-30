@@ -1,0 +1,362 @@
+﻿@model List<PlantNests.Models.Product>
+
+@{
+    ViewData["Title"] = "CategoryFilter";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+
+@{
+    var user = ViewContext.HttpContext.Session.GetString("id");
+}
+
+<style>
+    .add-to-cart-btn,
+    .qty-count {
+        background-color: #90EE90; /* Light green color */
+        border: none;
+        color: #fff;
+    }
+
+        .add-to-cart-btn:hover,
+        .qty-count:hover {
+            background-color: #76c376; /* Slightly darker green on hover */
+        }
+
+    .product-img {
+        position: relative;
+        overflow: hidden; /* Ensure the button stays within bounds */
+    }
+
+
+    .star-rating {
+        font-size: 18px; /* Adjust size as needed */
+        color: #FFD700; /* Gold color for stars */
+        display: inline-block;
+    }
+
+        .star-rating .fa-star {
+            cursor: pointer;
+        }
+
+            .star-rating .fa-star.checked {
+                color: #FFBF00; /* Highlighted star color */
+                display: none;
+            }
+
+    .product-meta {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px; /* Space above the button */
+    }
+
+        .product-meta input.add-to-cart-btn {
+            background-color: #90EE90; /* Light green color */
+            border: none;
+            color: #fff;
+            padding: 10px 20px; /* Padding inside the button */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
+
+            .product-meta input.add-to-cart-btn:hover {
+                background-color: #76c376; /* Slightly darker green on hover */
+            }
+    /* General star styles */
+    .star-rating .ratingstar {
+        font-size: 19px;
+        color: #d3d3d3; /* Light gray color for unselected stars */
+        cursor: pointer;
+        border: 2px solid transparent; /* Default border color (transparent) */
+        border-radius: 50%; /* Rounded border */
+        padding: 2px; /* Add some space around the star */
+    }
+
+        /* Hover effect for stars */
+        .star-rating .ratingstar:hover {
+            color: #ffcc00; /* Color for the stars on hover */
+            border-color: #ffcc00; /* Yellow border on hover */
+        }
+
+        /* Selected stars (when clicked) */
+        .star-rating .ratingstar.selected {
+            color: #ffcc00; /* Yellow color for selected stars */
+            border-color: #ffcc00; /* Yellow border for selected stars */
+        }
+
+    .ratings i:hover,
+    .ratings i.hover,
+    .ratings i.active
+    .ratings i.selected {
+        color: #ffcc00;
+    }
+
+    ratings i {
+        font-size: 18px;
+        color: #ddd; /* Default star color */
+        cursor: pointer;
+    }
+
+    .ratings i.fas {
+        color: #ffcc00; /* Star color when active or selected */
+    }
+
+    /*.ratings i.far {
+           color: #ddd;
+         }
+    */
+
+
+    .product-form {
+        margin-bottom: 20px;
+    }
+
+    .product-image img {
+        width: 100%; /* Ensure image takes full width of its container */
+    }
+
+    .product-info {
+        margin-bottom: 10px; /* Adjust spacing */
+    }
+
+    .qty-input {
+        margin-top: 10px;
+    }
+
+    .ratings i {
+        cursor: pointer; /* Make stars clickable */
+    }
+
+</style>
+
+<!-- ##### Breadcrumb Area Start ##### -->
+<div class="breadcrumb-area">
+    <!-- Top Breadcrumb Area -->
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url('/Clientsite/img/bg-img/24.jpg');">
+        <h2>Shop</h2>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Home","Client")"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Shop</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ##### Breadcrumb Area End ##### -->
+<!-- ##### Shop Area Start ##### -->
+<section class="shop-page section-padding-0-100">
+    <div class="container">
+        <div class="row">
+            <!-- Shop Sorting Data -->
+            <div class="col-12">
+                <div class="shop-sorting-data d-flex flex-wrap align-items-center justify-content-between">
+                    <!-- Shop Page Count -->
+                    <div class="shop-page-count">
+                        <p>Showing 1–9 of 72 results</p>
+                    </div>
+                    <!-- Search by Terms -->
+                    <div class="search_by_terms">
+                        <form action="#" method="post" class="form-inline">
+                            <select class="custom-select widget-title">
+                                <option selected>Short by Popularity</option>
+                                <option value="1">Short by Newest</option>
+                                <option value="2">Short by Sales</option>
+                                <option value="3">Short by Ratings</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Area -->
+            <div class="col-12 col-md-4 col-lg-3">
+                <div class="shop-sidebar-area">
+
+                    <!-- Shop Widget -->
+                    <div class="shop-widget price mb-50">
+                        <h4 class="widget-title">Prices</h4>
+                        <div class="widget-desc">
+                            <div class="slider-range">
+                                <div data-min="@ViewBag.prce" data-max="@ViewBag.prces" data-unit="$" class="slider-range-price ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all" data-value-min="@ViewBag.prce" data-value-max="@ViewBag.prces" data-label-result="Price:">
+                                    <div class="ui-slider-range ui-widget-header ui-corner-all"></div>
+                                    <span class="ui-slider-handle ui-state-default ui-corner-all first-handle" tabindex="0"></span>
+                                    <span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0"></span>
+                                </div>
+                                <div class="range-price">Price: $@ViewBag.prce - $@ViewBag.prces</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shop-widget catagory mb-50">
+                        <h4 class="widget-title">Categories</h4>
+                        <div class="widget-desc">
+                            <div class="custom-control custom-checkbox d-flex align-items-center mb-2">
+                                <input type="checkbox" name="categories" class="custom-control-input" id="customCheck1">
+                                <label class="custom-control-label" for="customCheck1">All plants <span class="text-muted"></span></label>
+                            </div>
+
+                            @foreach (var item in ViewBag.groupcategory)
+                            {
+                                <div class="custom-control custom-checkbox d-flex align-items-center mb-2">
+                                 <input type="checkbox" name="categories" value="@item.catId" class="custom-control-input" id="customChecks-@item.catId">
+                                 <label class="custom-control-label" for="customChecks-@item.catId">@item.catName <span class="text-muted">@item.Count</span></label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Shop Widget -->
+                    <div class="shop-widget sort-by mb-50">
+                        <h4 class="widget-title">Sort by</h4>
+                        
+                        <div class="widget-desc">
+                            <!-- Single Checkbox -->
+                            <div class="custom-control custom-checkbox d-flex align-items-center mb-2">
+                                    <input type="checkbox" class="custom-control-input" id="customCheck-">
+                                    <label class="custom-control-label" for="customCheck7">New arrivals</label>
+                            </div>
+                            <!-- Single Checkbox -->
+                            <div class="custom-control custom-checkbox d-flex align-items-center mb-2">
+                                    <input type="checkbox" class="custom-control-input" id="customCheck" name="sort" value="">
+                                    <label class="custom-control-label" for="customCheck8">Alphabetically, A-Z</label>
+                            </div>
+                            <!-- Single Checkbox -->
+                            <div class="custom-control custom-checkbox d-flex align-items-center mb-2">
+                                <input type="checkbox" class="custom-control-input" id="customCheck" name="sort" value="">
+                                    <label class="custom-control-label" for="customCheck9">Alphabetically, Z-A</label>
+                            </div>
+                            <!-- Single Checkbox -->
+                            <div class="custom-control custom-checkbox d-flex align-items-center mb-2">
+                                <input type="checkbox" class="custom-control-input" id="customCheck10">
+                                    <label class="custom-control-label" for="customCheck">Price: low to high</label>
+                            </div>
+                            <!-- Single Checkbox -->
+                            <div class="custom-control custom-checkbox d-flex align-items-center">
+                                <input type="checkbox" class="custom-control-input" id="customCheck11">
+                                <label class="custom-control-label" for="customCheck11">Price: high to low</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Products Area -->
+            <div class="col-12 col-md-8 col-lg-9" id="productContainer">
+                <div class="shop-products-area">
+                    <div class="row">
+                        @foreach (var item in Model)
+                        {
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="single-product-area mb-50 wow fadeInUp" data-wow-delay="100ms">
+                                    <!-- Product Image -->
+                                    <div class="product-image">
+                                        <img src="~/@item.productimage" alt="@item.productName">
+                                    </div>
+
+                                    <form method="post" asp-action="Home" asp-controller="Client">
+                                        <input type="hidden" name="productid" value="@item.productId" />
+                                        <input type="hidden" name="image" value="@item.productimage" />
+                                        <input type="hidden" name="price" value="@item.price" />
+                                        <div class="product-info">
+                                            <div class="product-tag ml-5">
+                                                <a>@item.productName</a>
+                                            </div>
+                                            <div class="product-tag ml-5">
+                                                <a>@item.price</a>
+                                            </div>
+                                        </div>
+
+                                        <div class="qty-input text-center mt-2">
+                                            <button class="qty-count qty-count--minus btn btn-primary" data-action="minus" type="button">-</button>
+                                            <input class="product-qty" type="number" name="qty" min="0" max="3" value="1">
+                                            <button class="qty-count qty-count--add btn btn-primary" data-action="add" type="button">+</button>
+                                        </div>
+
+                                        @if (user != null)
+                                        {
+                                            <div class="ratings ml-5">
+                                                <i class="fa fa-star ratingstart" data-value="1" data-productid="@item.productId"></i>
+                                                <i class="fa fa-star ratingstart" data-value="2" data-productid="@item.productId"></i>
+                                                <i class="fa fa-star ratingstart" data-value="3" data-productid="@item.productId"></i>
+                                                <i class="fa fa-star ratingstart" data-value="4" data-productid="@item.productId"></i>
+                                                <i class="fa fa-star ratingstart" data-value="5" data-productid="@item.productId"></i>
+                                            </div>
+                                        }
+
+                                        <div class="product-meta d-flex">
+                                            <input type="submit" class="add-to-cart-btn btn btn-primary mt-2 text-center" value="Add to cart">
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+@*                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#"><i class="fa fa-angle-right"></i></a></li>
+                        </ul>
+                    </nav>
+*@                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <script>
+        $(document).on('change', 'input[name="categories"]', function () {
+            // Uncheck all checkboxes except the one that was just checked
+            $('input[name="categories"]').not(this).prop('checked', false);
+
+            var selectedCategory = $(this).val();
+
+            var url = '@Url.Action("CategoryFilter", "Client")' + '?categories=' + selectedCategory;
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { categories: selectedCategory },
+                success: function (response) {
+                    history.pushState(null, '', url);
+                        $('#productContainer').html($(response).find('#productContainer').html());
+                    },
+                    error: function () {
+                        alert('An error occurred.');
+                    }
+            });
+
+        $(document).on('change', 'input[name="sort"]', function () {
+            var selectedSort = $(this).val();
+
+            // Uncheck other sort options
+            $('input[name="sort"]').not(this).prop('checked', false);
+
+            var url = '@Url.Action("AssendingVlaue", "Client")' + '?sort=' + selectedSort;
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { sort: selectedSort },
+                success: function (response) {
+                    history.pushState(null, '', url); // Update the URL in the browser
+                    $('#productContainer').html($(response).find('#productContainer').html());
+                },
+                error: function () {
+                    alert('An error occurred.');
+                }
+            });
+        });
+        });
+    </script>
+

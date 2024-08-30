@@ -1,0 +1,140 @@
+﻿@model PlantNests.Models.CustomerViewModel
+@{
+    ViewData["Title"] = "OrderPlace";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<style>
+
+    .form-group small {
+        color: var(--error-color);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        visibility: hidden;
+    }
+
+    .form-group.success input {
+        border-color: var(--succes-color);
+    }
+
+    .form-group.error input {
+        border-color: var(--error-color);
+    }
+
+    .form-group.error small {
+        visibility: visible;
+    }
+
+    .borderform {
+        border-radius: 50px;
+        padding: 30px;
+    }
+
+    .btn btn-primary {
+        border-radius: 20px;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+    }
+</style>
+
+
+<div class="breadcrumb-area">
+    <!-- Top Breadcrumb Area -->
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url('/Clientsite/img/bg-img/24.jpg');">
+        <h2>Register</h2>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ##### Breadcrumb Area End ##### -->
+<!-- ##### Checkout Area Start ##### -->
+<div class="checkout_area mb-100">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-12 col-lg-7">
+                <div class="checkout_details_area clearfix"><br/>
+                    <h5>Billing Details</h5>
+                    <form method="post" asp-action="OrderPlace">
+                        <div class="row">
+                            <div class="col-md-6 mb-4 form-group">
+                                <label for="first_name">First Name *</label>
+                                <input asp-for="Name" class="form-control" id="first_name" name="name" value="@Model.Name"><br />
+                                <small style="color:red;">Error Message</small>
+                            </div>
+                            <div class="col-12 mb-4 form-group">
+                                <label for="email_address">Email Address *</label>
+                                <input asp-for="Email" class="form-control" id="email" name="email" value="@Model.Email"><br />
+                                <small style="color:red;">Error Message</small>
+                            </div>
+                            <div class="col-12 mb-4 form-group">
+                                <label for="password">Password *</label>
+                                <input asp-for="Password" class="form-control" id="password" name="password" value="@Model.Password"><br />
+                                <small style="color:red;">Error Message</small>
+                            </div>
+                            <div class="col-12 mb-4 form-group">
+                                <label for="address">Address *</label>
+                                <input asp-for="address" class="form-control" id="add" name="address" value="@Model.address">
+                                <small style="color:red;">Error Message</small>
+                            </div>
+                            <div class="col-12 mb-4 form-group">
+                                <label for="phone_number">Phone Number *</label>
+                                <input asp-for="Number" class="form-control" id="number" name="phone" value="@Model.Number"><br />
+                                <small style="color:red;">Error Message</small>
+                            </div>
+
+                           
+                        </div>
+                    </form>
+                </div>
+            </div>
+          
+           
+                <div class="col-12 col-lg-4">
+                    <div class="checkout-content">
+                        <h5 class="title--">Your Order</h5>
+                        <div class="products">
+                            <div class="products-data">
+                                <h5>Products:</h5>
+                               
+                            </div>
+                        </div>
+                        <div class="subtotal d-flex justify-content-between align-items-center">
+                            <h5>SubTotall</h5>
+                            <h5>$@ViewBag.bill </h5>
+                        </div>
+                        <div class="shipping d-flex justify-content-between align-items-center">
+                            <h5>Shipping Free</h5>
+                        </div>
+                        <div class="order-total d-flex justify-content-between align-items-center">
+                            <h5>Order Total</h5>
+                            <h5>$@ViewBag.bill </h5>
+                        </div>
+                        <form method="post" asp-action="OrderPlace">
+                        <div class="checkout-btn mt-30">
+                        <input type="submit" class="btn alazea-btn w-100" value="Place Order">
+                        
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            
+        </div>
+    </div>
+</div>
+
+
+
