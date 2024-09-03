@@ -38,6 +38,10 @@
         top: 50%;
         left: 50%;
     }
+
+    .custom-control-input payment-radio {
+        background-color: #90EE90;
+    }
 </style>
 
 
@@ -66,9 +70,10 @@
     <div class="container">
         <div class="row justify-content-between">
             <div class="col-12 col-lg-7">
-                <div class="checkout_details_area clearfix"><br/>
+                <div class="checkout_details_area clearfix">
+                    <br />
                     <h5>Billing Details</h5>
-                    <form method="post" asp-action="OrderPlace">
+                    <form method="post" asp-action="OrderPlace" id="form">
                         <div class="row">
                             <div class="col-md-6 mb-4 form-group">
                                 <label for="first_name">First Name *</label>
@@ -96,45 +101,144 @@
                                 <small style="color:red;">Error Message</small>
                             </div>
 
-                           
+
                         </div>
                     </form>
                 </div>
             </div>
-          
-           
-                <div class="col-12 col-lg-4">
-                    <div class="checkout-content">
-                        <h5 class="title--">Your Order</h5>
-                        <div class="products">
-                            <div class="products-data">
-                                <h5>Products:</h5>
-                               
+
+
+            <div class="col-12 col-lg-4">
+                <div class="checkout-content">
+                    <h5 class="title--">Your Order</h5>
+                    <div class="products">
+                        <div class="products-data">
+                            <h5>Products:</h5>
+
+                        </div>
+                    </div>
+                    <div class="subtotal d-flex justify-content-between align-items-center">
+                        <h5>SubTotall</h5>
+                        <h5>$@ViewBag.bill </h5>
+                    </div>
+                    <div class="shipping d-flex justify-content-between align-items-center">
+                        <h5>Shipping Free</h5>
+                    </div>
+                    <div class="order-total d-flex justify-content-between align-items-center">
+                        <h5>Order Total</h5>
+                        <h5>$@ViewBag.bill </h5>
+                    </div><br />
+
+                    <form method="post" asp-action="OrderPlace" id="form">
+                        <h5 class="section-title position-relative text-uppercase mb-3"><span class="mt-5 pr-3">Payment</span></h5>
+                        @foreach (var item in ViewBag.payment)
+                        {
+                            <div class="col-md-6 form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input payment-radio" name="PaymentTypeId" id="paypal-@item.paymenttypeId" value="@item.paymenttypeId" />
+                                    <label class="custom-control-label" for="paypal-@item.paymenttypeId">@item.PaymentType</label>
+                                    <small style="color:red;">Error Message</small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="subtotal d-flex justify-content-between align-items-center">
-                            <h5>SubTotall</h5>
-                            <h5>$@ViewBag.bill </h5>
-                        </div>
-                        <div class="shipping d-flex justify-content-between align-items-center">
-                            <h5>Shipping Free</h5>
-                        </div>
-                        <div class="order-total d-flex justify-content-between align-items-center">
-                            <h5>Order Total</h5>
-                            <h5>$@ViewBag.bill </h5>
-                        </div>
-                        <form method="post" asp-action="OrderPlace">
+                        }
                         <div class="checkout-btn mt-30">
-                        <input type="submit" class="btn alazea-btn w-100" value="Place Order">
-                        
+                            <input type="submit" class="btn alazea-btn w-100" value="Place Order">
                         </div>
                     </form>
-                    </div>
+                      
                 </div>
-            
+            </div>
+
         </div>
     </div>
 </div>
 
 
+
+<script>
+    function submitForm() {
+        const form = document.getElementById('form');
+        const CustName = document.getElementById('first_name');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const number = document.getElementById('number');
+        const address = document.getElementById('add');
+        const payment = document.getElementById('paypal');
+
+        // Show input error messages
+        function showError(input, message) {
+            const formControl = input.parentElement;
+            formControl.className = 'col-md-6 form-group error';
+            const small = formControl.querySelector('small');
+            small.innerText = message;
+        }
+        // Show success color
+        function showSuccess(input) {
+            const formControl = input.parentElement;
+            formControl.className = 'col-md-6 form-group success';
+        }
+
+        // Check email is valid
+        function checkEmail(input) {
+            const re = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+            if (input.value.trim() === '') {
+                showError(input, 'Email is required');
+            } else if (re.test(input.value.trim())) {
+                showSuccess(input);
+            } else {
+                showError(input, 'Email is not valid');
+            }
+        }
+
+        function checkPassword(input) {
+            const password = input.value.trim();
+            if (password === '') {
+                showError(input, 'Password is required');
+            } else if (password.length < 10) {
+                showError(input, 'Password must be at least 10 characters');
+            } else {
+                showSuccess(input);
+            }
+        }
+
+        // Check required fields
+        function checkRequired(inputArr) {
+            inputArr.forEach(function (input) {
+                if (input.value.trim() === '') {
+                    showError(input, `${getFieldName(input)} is required`);
+                } else {
+                    showSuccess(input);
+                }
+            });
+        }
+
+        // Check input Length
+        function checkLength(input, min, max) {
+            if (input.value.length < min) {
+                showError(input, `${getFieldName(input)} must be at least ${min} characters`);
+            } else if (input.value.length > max) {
+                showError(input, `${getFieldName(input)} must be less than ${max} characters`);
+            } else {
+                showSuccess(input);
+            }
+        }
+
+        // Get FieldName
+        function getFieldName(input) {
+            return input.id.charAt(0).toUpperCase() + input.id.slice(1);
+        }
+
+        // Validate form fields
+        checkRequired([CustName, email, password, number, address, payment]);
+        checkLength(CustName, 3, 15);
+        checkPassword(password);
+        checkEmail(email);
+
+        // Check if there are any errors
+        if (document.querySelectorAll('.form-group.error').length === 0) {
+            // If no errors, submit the form
+            form.submit();
+        }
+    }
+</script>
 

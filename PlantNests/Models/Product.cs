@@ -18,7 +18,6 @@ namespace PlantNests.Models
         public virtual Category Category { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime Lastmodifield { get; set; }
-
         [NotMapped]
         public IFormFile profilepicture { get; set; }
     }

@@ -49,9 +49,8 @@
                                                 <tr>
                                                     <th class="sortStyle">Email</th>
                                                     <th class="sortStyle">ProductName</th>
-
                                                     <th class="sortStyle">Ordernumber</th>
-                                                    <th class="sortStyle">qty</th>
+                                                    <th class="sortStyle">Quantity</th>
                                                     <th class="sortStyle">Status</th>
 
                                                 </tr>
@@ -59,9 +58,7 @@
                                             <tbody>
                                                 @foreach (var user in Model)
                                                 {
-                                                    <tr>
-
-                                                        
+                                                    <tr>                 
                                                         <td>@user.Customer.Email</td>
                                                         <td>@user.Product.productName</td>
                                                         <td>@user.ordernumber</td>
@@ -71,13 +68,11 @@
                                                         <input type="submit" value="Accepted" class="btn btn-success" onclick="acceptedorder(@user.OrderId,event)" />
                                                         </td>
                                                         <td>
-                                                            <input type="submit" value="Deliverd" class="btn btn-danger" onclick="acceptedorder(@user.OrderId,event)" />
+                                                            <input type="submit" value="Deliverd" class="btn btn-danger" onclick="deliverorder(@user.OrderId,event)" />
                                                         </td>
-                                                        @*         <td>
-                                                    <form asp-action="Delete" asp-route-id="@user.Id" method="post">
-                                                    <input type="submit" class="btn btn-primary" value="Delete" onclick="return confirm('are you show you want to delete data')" />
-                                                    </form>
-                                                    </td>*@
+                                                        <td>
+                                                            <input type="submit" value="Cancelled" class="btn btn-danger" onclick="cancelled(@user.OrderId,event)" />
+                                                        </td>
                                                     </tr>
                                                 }
 
@@ -102,46 +97,67 @@
 <script src="https://common.olemiss.edu/_js/sweet-alert/sweet-alert.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://common.olemiss.edu/_js/sweet-alert/sweet-alert.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    var selectedid;
-    function acceptedorder(id, event) {
-        event.preventDefault();
-        selectedid = id;
-        $.ajax({
-            type: 'POST',
-            url: '/Product/Orderview',
-            data: { id: selectedid },
-            success: function (result) {
-                swal('Good job!', 'Order is Accepted!', 'success');
-                setTimeout(function () {
-                    console.log("selectedid", selectedid);
-                    location.reload();
-                }, 4000)
-            },
-            error: function () {
-                alert('failed to data');
+
+    <script>
+        var selectedid;
+        function acceptedorder(id, event) {
+            event.preventDefault();
+            selectedid = id;
+            $.ajax({
+                type: 'POST',
+                url: '/Product/Orderview',
+                data: { id: selectedid },
+                success: function (result) {
+                    swal('Good job!', 'Order is Accepted!', 'success');
+                    setTimeout(function () {                       
+                        location.reload();
+                    }, 4000)
+                },
+                error: function () {
+                    alert('failed to data');
+                }
+            });
+        }
+
+         function deliverorder(id, event) {
+                event.preventDefault();
+                selectedid = id;
+                $.ajax({
+                    type: 'POST',
+                    url: '/Product/Deliver',
+                    data: { id: selectedid },
+                    success: function (result) {
+                        swal('Good job!', 'Order is Deliverd!', 'success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 4000)
+                    },
+                    error: function () {
+                        alert('failed to data');
+                    }
+                });
+         }
+
+
+        function cancelled(id) {
+                event.preventDefault();
+                selectedid = id;
+                $.ajax({
+                    type: 'POST',
+                url: '/Product/OrderCancelled',
+                    data: { id: selectedid },
+                    success: function (result) {
+                    swal('Good job!', 'Order is ancelled!', 'success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 4000)
+                    },
+                    error: function () {
+                        alert('failed to data');
+                    }
+                });
             }
-        });
-    }
-    var selectedid;
-    function acceptedorder(id, event) {
-        event.preventDefault();
-        selectedid = id;
-        $.ajax({
-            type: 'POST',
-            url: '/Product/Deliver',
-            data: { id: selectedid },
-            success: function (result) {
-                swal('Good job!', 'Order is Accepted!', 'success');
-                setTimeout(function () {
-                    console.log("selectedid", selectedid);
-                    location.reload();
-                }, 4000)
-            },
-            error: function () {
-                alert('failed to data');
-            }
-        });
-    }
-    </script>
+
+       
+   </script>
 

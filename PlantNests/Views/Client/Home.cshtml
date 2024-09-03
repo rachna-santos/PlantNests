@@ -9,7 +9,7 @@
 @{
     var user = ViewContext.HttpContext.Session.GetString("id");
 }
-<style>
+    <style>
         .add-to-cart-btn,
         .qty-count {
             background-color: #90EE90; /* Light green color */
@@ -91,7 +91,7 @@
             }
         
             ratings i {
-            font-size: 18px;
+            font-size: 15px;
             color: #ddd; /* Default star color */
             cursor: pointer;
             }
@@ -118,14 +118,18 @@
             }
 
             .qty-input {
-                margin-top: 10px;
+                /*margin-top: 10px;*/
             }
 
             .ratings i {
                 cursor: pointer; /* Make stars clickable */
             }
 
-</style>
+    </style>
+
+        @{
+            var productQuantities = ViewBag.ProductQuantities as Dictionary<int, int>;
+        }
 
     <section class="hero-area">
         <div class="hero-post-slides owl-carousel">
@@ -163,32 +167,53 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="single-product-area mb-50 wow fadeInUp" data-wow-delay="100ms">
                         <!-- Product Image -->
-                        <div class="product-image">
+                      @*  <div class="product-image">
                             <img src="~/@item.productimage" alt="@item.productName">
-                        </div>
+                        </div>*@
 
                         <form method="post" asp-action="Home" asp-controller="Client">
                             <input type="hidden" name="productid" value="@item.productId"/>
                             <input type="hidden" name="image" value="@item.productimage"/>
                             <input type="hidden" name="price" value="@item.price"/>
+                            <div class="product-image">
+                                <img src="~/@item.productimage" alt="@item.productName">
+                            </div>
                             <div class="product-info">
                                 <div class="product-tag ml-5">
                                 <a>@item.productName</a>
                                 </div>
                                 <div class="product-tag ml-5">
                                 <a>@item.price</a>
+                                  
                                 </div>
                             </div>
 
-                                <div class="qty-input text-center mt-2">
+
+                            @if (productQuantities != null && productQuantities.ContainsKey(item.productId))
+                            {
+                                var quantity = productQuantities[item.productId];
+
+                                <div class="qty-input text-center mt-2" data-product-id="@item.productId" data-max-quantity="@quantity">
                                     <button class="qty-count qty-count--minus btn btn-primary" data-action="minus" type="button">-</button>
-                                    <input class="product-qty" type="number" name="qty" min="0" max="3" value="1">
+                                    <input class="product-qty" type="number" name="qty" min="1" max="@quantity" value="1" data-quantity-input>
                                     <button class="qty-count qty-count--add btn btn-primary" data-action="add" type="button">+</button>
                                 </div>
+
+                                if (quantity == 0 && quantity <= 0)
+                                {
+                                    <p class="text-center" style="color:forestgreen">Out Of Stock</p>
+                                }
+                                else
+                                {
+                                    <p class="text-center" style="color:forestgreen">Stock In</p>
+                                }
+
+                            }
+
                         
                                     @if(user != null)
                                     {
-                                    <div class="ratings ml-5">
+                                    <div class="ratings text-center">
                                     <i class="fa fa-star ratingstart" data-value="1" data-productid="@item.productId"></i>
                                     <i class="fa fa-star ratingstart" data-value="2" data-productid="@item.productId"></i>
                                     <i class="fa fa-star ratingstart" data-value="3" data-productid="@item.productId"></i>
@@ -196,10 +221,22 @@
                                     <i class="fa fa-star ratingstart" data-value="5" data-productid="@item.productId"></i>
                                     </div>
                                     }
-                    
-                            <div class="product-meta d-flex">
-                            <input type="submit" class="add-to-cart-btn btn btn-primary mt-2 text-center" value="Add to cart">
-                            </div>
+                            @if (productQuantities != null && productQuantities.ContainsKey(item.productId))
+                            {
+                                var quantity = productQuantities[item.productId];
+
+                                if (quantity == 0 && quantity <= 0)
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    <div class="product-meta d-flex">
+                                        <input type="submit" class="add-to-cart-btn btn btn-primary mt-2 text-center" value="Add to cart">
+                                    </div>
+                                }
+                            }
+
                         </form>
          
                     </div>
@@ -209,6 +246,112 @@
     </div>
 </section>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Select all quantity input containers
+            const qtyInputs = document.querySelectorAll('.qty-input');
 
+            qtyInputs.forEach(function (qtyInput) {
+                // Get max quantity from data attribute
+                const maxQuantity = parseInt(qtyInput.dataset.maxQuantity);
+                const inputField = qtyInput.querySelector('input[data-quantity-input]');
+                const addButton = qtyInput.querySelector('[data-action="add"]');
+                const minusButton = qtyInput.querySelector('[data-action="minus"]');
 
-     
+                // Add event listener for the add button
+                   addButton.addEventListener('click', function () {
+                    let currentValue = parseInt(inputField.value);
+                    if (currentValue < maxQuantity) {
+                        inputField.value = currentValue + 1;
+                    }
+                    if (parseInt(inputField.value) === maxQuantity) {
+                        addButton.disabled = true;
+                        // Disable add button if max quantity reached
+                    }
+                    minusButton.disabled = false; // Ensure minus button is enabled
+                });
+
+                // Add event listener for the minus button
+                minusButton.addEventListener('click', function () {
+                    let currentValue = parseInt(inputField.value);
+                    if (currentValue > 1) {
+                        inputField.value = currentValue - 1;
+                    }
+                    if (parseInt(inputField.value) === 1) {
+                        minusButton.disabled = true; // Disable minus button if min quantity reached
+                    }
+                    addButton.disabled = false; // Ensure add button is enabled
+                });
+
+                // Initialize buttons based on initial value
+                if (parseInt(inputField.value) === 1) {
+                    minusButton.disabled = true;
+                }
+                if (parseInt(inputField.value) === maxQuantity) {
+                    addButton.disabled = true;
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".ratingstart").hover(function () {
+                if (!$(this).hasClass("active")) {
+                    $(".ratingstart").removeClass("fas").addClass("far");
+                    $(this).addClass("fas").removeClass("far");
+                    $(this).prevAll(".ratingstart").addClass("fas").removeClass("far");
+                }
+            });
+
+            $(".ratingstart").click(function () {
+                var startvalue = $(this).data("value");
+                var productId = $(this).data("productid");
+
+                $.ajax({
+                    url: '/Client/Rating',
+                    type: 'POST',
+                    data: {
+                        productid: productId,
+                        rating: startvalue
+                    },
+                    success: function (response) {
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error: ' + error);
+                    }
+                });
+            });
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".ratingstart").hover(function () {
+                if (!$(this).hasClass("active")) {
+                    $(".ratingstart").removeClass("fas").addClass("far");
+                    $(this).addClass("fas").removeClass("far");
+                    $(this).prevAll(".ratingstart").addClass("fas").removeClass("far");
+                }
+            });
+
+            $(".ratingstart").click(function () {
+                var startvalue = $(this).data("value");
+                var productId = $(this).data("productid");
+
+                $.ajax({
+                    url: '/Client/Rating',
+                    type: 'POST',
+                    data: {
+                        productid: productId,
+                        rating: startvalue
+                    },
+                    success: function (response) {
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error: ' + error);
+                    }
+                });
+            });
+        });
+
+    </script>

@@ -1,4 +1,4 @@
-﻿@model List<PlantNests.Models.Inventory>
+﻿@*@model List<PlantNests.Models.Inventory>
 @{
     ViewData["Title"] = "Inventory";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -31,9 +31,7 @@
                                     <table id="sortable-table-1" class="table">
                                         <thead>
                                             <tr>
-                                                <th class="sortStyle">Email</th>
                                                 <th class="sortStyle">ProductName</th>
-                                                <th class="sortStyle">OrderNumber</th>
                                                 <th class="sortStyle">Currentqty</th>
 
                                             </tr>
@@ -42,15 +40,8 @@
                                             @foreach (var user in Model)
                                             {
                                                 <tr>
-
-
-
                                                     <td>@user.Product.productName</td>
-                                                    <td>@user.Customer.Email</td>
-                                                    <td>@user.Order.ordernumber</td>
-
-                                                    <td>@user.Inqty</td>
-
+                                                    <td>@user.CurrentQty</td>
                                                 </tr>
                                             }
 
@@ -66,3 +57,4 @@
     </div>
 </div>
 
+*@

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlantNests.Models;
 
@@ -11,9 +12,10 @@ using PlantNests.Models;
 namespace PlantNests.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240830073509_inventorys")]
+    partial class inventorys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,7 +264,7 @@ namespace PlantNests.Migrations
 
                     b.HasKey("categoryId");
 
-                    b.ToTable("categories", (string)null);
+                    b.ToTable("categories");
                 });
 
             modelBuilder.Entity("PlantNests.Models.Contact", b =>
@@ -284,7 +286,7 @@ namespace PlantNests.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("contacts", (string)null);
+                    b.ToTable("contacts");
                 });
 
             modelBuilder.Entity("PlantNests.Models.Customer", b =>
@@ -317,7 +319,7 @@ namespace PlantNests.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("customers", (string)null);
+                    b.ToTable("customers");
                 });
 
             modelBuilder.Entity("PlantNests.Models.Inventory", b =>
@@ -331,10 +333,19 @@ namespace PlantNests.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("CurrentQty")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Lastmodifield")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalQty")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Totalamount")
                         .HasColumnType("int");
 
                     b.Property<int>("productId")
@@ -344,7 +355,7 @@ namespace PlantNests.Migrations
 
                     b.HasIndex("productId");
 
-                    b.ToTable("inventories", (string)null);
+                    b.ToTable("inventories");
                 });
 
             modelBuilder.Entity("PlantNests.Models.Login", b =>
@@ -365,7 +376,7 @@ namespace PlantNests.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("logins", (string)null);
+                    b.ToTable("logins");
                 });
 
             modelBuilder.Entity("PlantNests.Models.Order", b =>
@@ -411,65 +422,7 @@ namespace PlantNests.Migrations
 
                     b.HasIndex("productId");
 
-                    b.ToTable("orders", (string)null);
-                });
-
-            modelBuilder.Entity("PlantNests.Models.Payment", b =>
-                {
-                    b.Property<int>("paymentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("paymentId"), 1L, 1);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Lastmodifield")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PaymentStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TotalAmount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("paymenttypeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("paymentId");
-
-                    b.HasIndex("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("paymenttypeId");
-
-                    b.ToTable("payments", (string)null);
-                });
-
-            modelBuilder.Entity("PlantNests.Models.Paymenttype", b =>
-                {
-                    b.Property<int>("paymenttypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("paymenttypeId"), 1L, 1);
-
-                    b.Property<string>("PaymentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("paymenttypeId");
-
-                    b.ToTable("paymenttypes", (string)null);
+                    b.ToTable("orders");
                 });
 
             modelBuilder.Entity("PlantNests.Models.Product", b =>
@@ -508,7 +461,7 @@ namespace PlantNests.Migrations
 
                     b.HasIndex("categoryId");
 
-                    b.ToTable("products", (string)null);
+                    b.ToTable("products");
                 });
 
             modelBuilder.Entity("PlantNests.Models.Rating", b =>
@@ -543,7 +496,7 @@ namespace PlantNests.Migrations
 
                     b.HasIndex("productId");
 
-                    b.ToTable("ratings", (string)null);
+                    b.ToTable("ratings");
                 });
 
             modelBuilder.Entity("PlantNests.Models.ShoppingCart", b =>
@@ -581,11 +534,9 @@ namespace PlantNests.Migrations
 
                     b.HasKey("cartId");
 
-                    b.HasIndex("Id");
-
                     b.HasIndex("productId");
 
-                    b.ToTable("shoppingCarts", (string)null);
+                    b.ToTable("shoppingCarts");
                 });
 
             modelBuilder.Entity("PlantNests.Models.Registration", b =>
@@ -695,33 +646,6 @@ namespace PlantNests.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("PlantNests.Models.Payment", b =>
-                {
-                    b.HasOne("PlantNests.Models.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PlantNests.Models.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PlantNests.Models.Paymenttype", "paymenttype")
-                        .WithMany()
-                        .HasForeignKey("paymenttypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Order");
-
-                    b.Navigation("paymenttype");
-                });
-
             modelBuilder.Entity("PlantNests.Models.Product", b =>
                 {
                     b.HasOne("PlantNests.Models.Category", "Category")
@@ -754,19 +678,11 @@ namespace PlantNests.Migrations
 
             modelBuilder.Entity("PlantNests.Models.ShoppingCart", b =>
                 {
-                    b.HasOne("PlantNests.Models.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("PlantNests.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("productId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Customer");
 
                     b.Navigation("Product");
                 });

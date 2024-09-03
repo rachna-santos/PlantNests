@@ -22,9 +22,9 @@ namespace PlantNests.Models
         public DbSet<Rating> ratings { get; set; }
         public DbSet<Order> orders { get; set; }
         public DbSet<Inventory> inventories { get; set; }
-        public DbSet<SoldProduct> soldProducts { get; set; }
-
-
+        public DbSet<Paymenttype> paymenttypes { get; set; }
+        public DbSet<Payment> payments { get; set; }
+        //public DbSet<SoldProduct> soldProducts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

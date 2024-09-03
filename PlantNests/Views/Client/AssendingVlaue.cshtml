@@ -1,4 +1,6 @@
-﻿@{
+﻿
+
+@{
     ViewData["Title"] = "AssendingVlaue";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
@@ -125,6 +127,9 @@
 
 </style>
 
+@{
+    var productQuantities = ViewBag.ProductQuantities as Dictionary<int, int>;
+}
 <!-- ##### Breadcrumb Area Start ##### -->
 <div class="breadcrumb-area">
     <!-- Top Breadcrumb Area -->
@@ -229,12 +234,12 @@
                             <!-- Single Checkbox -->
                             <div class="custom-control custom-checkbox d-flex align-items-center mb-2">
                                 <input type="checkbox" class="custom-control-input" id="customCheck10">
-                                <label class="custom-control-label" for="customCheck">Price: low to high</label>
+                                <label class="custom-control-label" for="customCheck">Price: low to low</label>
                             </div>
                             <!-- Single Checkbox -->
                             <div class="custom-control custom-checkbox d-flex align-items-center">
                                 <input type="checkbox" class="custom-control-input" id="customCheck11">
-                                <label class="custom-control-label" for="customCheck11">Price: high to low</label>
+                                <label class="custom-control-label" for="customCheck11">Price: high to hight</label>
                             </div>
                         </div>
                     </div>
@@ -267,15 +272,28 @@
                                             </div>
                                         </div>
 
-                                        <div class="qty-input text-center mt-2">
-                                            <button class="qty-count qty-count--minus btn btn-primary" data-action="minus" type="button">-</button>
-                                            <input class="product-qty" type="number" name="qty" min="0" max="3" value="1">
-                                            <button class="qty-count qty-count--add btn btn-primary" data-action="add" type="button">+</button>
-                                        </div>
+                                        @if (productQuantities != null && productQuantities.ContainsKey(item.productId))
+                                        {
+                                            var quantity = productQuantities[item.productId];
+
+                                            <div class="qty-input text-center mt-2" data-product-id="@item.productId" data-max-quantity="@quantity">
+                                                <button class="qty-count qty-count--minus btn btn-primary" data-action="minus" type="button">-</button>
+                                                <input class="product-qty" type="number" name="qty" min="1" max="@quantity" value="1" data-quantity-input>
+                                                <button class="qty-count qty-count--add btn btn-primary" data-action="add" type="button">+</button>
+                                            </div>
+                                            if (quantity == 0 && quantity <= 0)
+                                            {
+                                                <p class="text-center" style="color:forestgreen">Out Of Stock</p>
+                                            }
+                                            else
+                                            {
+                                                <p class="text-center" style="color:forestgreen">Stock In</p>
+                                            }
+                                        }
 
                                         @if (user != null)
                                         {
-                                            <div class="ratings ml-5">
+                                            <div class="ratings text-center">
                                                 <i class="fa fa-star ratingstart" data-value="1" data-productid="@item.productId"></i>
                                                 <i class="fa fa-star ratingstart" data-value="2" data-productid="@item.productId"></i>
                                                 <i class="fa fa-star ratingstart" data-value="3" data-productid="@item.productId"></i>
@@ -308,6 +326,116 @@
     </div>
 </section>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Select all quantity input containers
+            const qtyInputs = document.querySelectorAll('.qty-input');
+
+            qtyInputs.forEach(function (qtyInput) {
+                // Get max quantity from data attribute
+                const maxQuantity = parseInt(qtyInput.dataset.maxQuantity);
+                const inputField = qtyInput.querySelector('input[data-quantity-input]');
+                const addButton = qtyInput.querySelector('[data-action="add"]');
+                const minusButton = qtyInput.querySelector('[data-action="minus"]');
+
+                // Add event listener for the add button
+                addButton.addEventListener('click', function () {
+                    let currentValue = parseInt(inputField.value);
+                    if (currentValue < maxQuantity) {
+                        inputField.value = currentValue + 1;
+                    }
+                    if (parseInt(inputField.value) === maxQuantity) {
+                        addButton.disabled = true; // Disable add button if max quantity reached
+                    }
+                    minusButton.disabled = false; // Ensure minus button is enabled
+                });
+
+                // Add event listener for the minus button
+                minusButton.addEventListener('click', function () {
+                    let currentValue = parseInt(inputField.value);
+                    if (currentValue > 1) {
+                        inputField.value = currentValue - 1;
+                    }
+                    if (parseInt(inputField.value) === 1) {
+                        minusButton.disabled = true; // Disable minus button if min quantity reached
+                    }
+                    addButton.disabled = false; // Ensure add button is enabled
+                });
+
+                // Initialize buttons based on initial value
+                if (parseInt(inputField.value) === 1) {
+                    minusButton.disabled = true;
+                }
+                if (parseInt(inputField.value) === maxQuantity) {
+                    addButton.disabled = true;
+                }
+            });
+        });
+    </script>
+
+   
+    <script>
+    $(document).ready(function () {
+        $(".ratingstart").hover(function () {
+            if (!$(this).hasClass("active")) {
+                $(".ratingstart").removeClass("fas").addClass("far");
+                $(this).addClass("fas").removeClass("far");
+                $(this).prevAll(".ratingstart").addClass("fas").removeClass("far");
+            }
+        });
+
+        $(".ratingstart").click(function () {
+            var startvalue = $(this).data("value");
+            var productId = $(this).data("productid");
+
+            $.ajax({
+                url: '/Client/Rating',
+                type: 'POST',
+                data: {
+                    productid: productId,
+                    rating: startvalue
+                },
+                success: function (response) {
+                },
+                error: function (xhr, status, error) {
+                    alert('Error: ' + error);
+                }
+            });
+        });
+    });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".ratingstart").hover(function () {
+                if (!$(this).hasClass("active")) {
+                    $(".ratingstart").removeClass("fas").addClass("far");
+                    $(this).addClass("fas").removeClass("far");
+                    $(this).prevAll(".ratingstart").addClass("fas").removeClass("far");
+                }
+            });
+
+            $(".ratingstart").click(function () {
+                var startvalue = $(this).data("value");
+                var productId = $(this).data("productid");
+
+                $.ajax({
+                    url: '/Client/Rating',
+                    type: 'POST',
+                    data: {
+                        productid: productId,
+                        rating: startvalue
+                    },
+                    success: function (response) {
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error: ' + error);
+                    }
+                });
+            });
+        });
+
+    </script>
 
     <script>
         $(document).on('change', 'input[name="categories"]', function () {

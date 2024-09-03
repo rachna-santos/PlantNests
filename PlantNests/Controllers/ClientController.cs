@@ -8,6 +8,8 @@ using NuGet.Packaging.Signing;
 using PlantNests.Migrations;
 using PlantNests.Models;
 using System.Drawing;
+using System.Net;
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Xml;
 using static System.Net.Mime.MediaTypeNames;
@@ -51,6 +53,7 @@ namespace PlantNests.Controllers
 
             ViewBag.groupcategory = countcategory;
 
+
             var totalcat = _context.categories.Count();
             ViewBag.total = totalcat;
 
@@ -79,7 +82,20 @@ namespace PlantNests.Controllers
                     break;
             }
             var selectprice = _context.products.Where(p => p.price >= min && p.price <= max).ToList();
+
             var product = _context.products.ToList();
+            var productQuantities = new Dictionary<int, int>();
+
+            foreach (var item in product)
+            {
+                var quantity = _context.inventories
+                    .Where(p => p.productId == item.productId)
+                    .Sum(p => p.Quantity);
+
+                productQuantities[item.productId] = quantity;
+            }
+
+            ViewBag.ProductQuantities = productQuantities;
             return View(product);
 
             }
@@ -143,6 +159,21 @@ namespace PlantNests.Controllers
                         break;
                 }
                 var product = await _context.products.Where(p => categories.Contains(p.categoryId)).ToListAsync();
+
+                //setquantity
+              
+                var productQuantities = new Dictionary<int, int>();
+
+                foreach (var item in product)
+                {
+                    var quantity = _context.inventories
+                        .Where(p => p.productId == item.productId)
+                        .Sum(p => p.Quantity);
+
+                    productQuantities[item.productId] = quantity;
+                }
+
+                ViewBag.ProductQuantities = productQuantities;
                 return View(product);
 
             }
@@ -202,6 +233,19 @@ namespace PlantNests.Controllers
                     var productList = await products.ToListAsync();
                     ViewBag.product = productList;
                     var selectprice = _context.products.Where(p => p.price >= min && p.price <= max).ToList();
+
+                    var productQuantities = new Dictionary<int, int>();
+
+                    foreach (var item in productList)
+                    {
+                        var quantity = _context.inventories
+                            .Where(p => p.productId == item.productId)
+                            .Sum(p => p.Quantity);
+
+                        productQuantities[item.productId] = quantity;
+                    }
+
+                    ViewBag.ProductQuantities = productQuantities;
                     return View();
                 }
        [HttpGet]
@@ -262,7 +306,6 @@ namespace PlantNests.Controllers
                 var selectprice=_context.products.Where(p=>p.price>=min && p.price<=max).ToList();
                 return View(selectprice);
         }
-
         [HttpGet]
         public IActionResult Home(string term="")
         {
@@ -281,6 +324,7 @@ namespace PlantNests.Controllers
                 }
             }
 
+
             // Retrieve the shopping cart from the session
             List<ShoppingCart> cartItems = HttpContext.Session.GetObject<List<ShoppingCart>>("Cart") ?? new List<ShoppingCart>();
             int cartItemCount = cartItems.Sum(item => item.qty);
@@ -294,10 +338,25 @@ namespace PlantNests.Controllers
                                    .Include(p => p.Category)
                                    .Where(p => string.IsNullOrEmpty(term) || p.productName.ToLower().StartsWith(term))
                                    .ToList();
+            var productQuantities = new Dictionary<int, int>();
+
+            foreach (var product in products)
+            {
+                var quantity = _context.inventories
+                    .Where(p => p.productId == product.productId)
+                    .Sum(p => p.Quantity);
+
+                productQuantities[product.productId] = quantity;
+            }
+
+            ViewBag.ProductQuantities = productQuantities;
+
+            ViewBag.ordershow = _context.orders.ToList();
+
             return View(products);
         
 
-    }
+        }
          [HttpPost]
         public IActionResult Home(int productid,int price, int qty,string image)
         {
@@ -341,10 +400,12 @@ namespace PlantNests.Controllers
             HttpContext.Session.SetString("Price", price.ToString() ?? "No price available");
             return RedirectToAction("OrderPlace","Client");
         }
-
         [HttpGet]
         public IActionResult OrderPlace()
         {
+            var payment = _context.paymenttypes.ToList();
+            ViewBag.payment = payment;
+
             var user = HttpContext.Session.GetString("id");
 
             if (user != null)
@@ -370,7 +431,7 @@ namespace PlantNests.Controllers
                 List<ShoppingCart> cartItems = HttpContext.Session.GetObject<List<ShoppingCart>>("Cart") ?? new List<ShoppingCart>();
                 int cartItemCount = cartItems.Sum(item => item.qty);
                 ViewBag.count = cartItemCount;
-                 var customer = _context.customers.Where(p => p.Id == id).FirstOrDefault();
+                var customer = _context.customers.Where(p => p.Id == id).FirstOrDefault();
                 var CustomerViewModel = new CustomerViewModel
                 {
                     Id = customer.Id,
@@ -386,17 +447,19 @@ namespace PlantNests.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult OrderPlace(Order model)
+        public IActionResult OrderPlace(int PaymentTypeId)
         {
+            var payment = _context.paymenttypes.ToList();
+            ViewBag.payment = payment;
+
             var user = HttpContext.Session.GetString("id");
 
-            ; if (user != null)
+             if (user != null)
             {
                 int id = int.Parse(user);
                 var users = _context.customers.FirstOrDefault(p => p.Id == id);
                 var Name = users.Email;
                 ViewBag.UserName = Name;
-
 
                 decimal totalBill = 0;
                 if (HttpContext.Session.GetObject<List<ShoppingCart>>("Cart") != null)
@@ -433,14 +496,61 @@ namespace PlantNests.Controllers
                         order.Lastmodifield = DateTime.Now;
                         _context.orders.Add(order);
                         _context.SaveChanges();
-                        ViewBag.order = "order is successfully";
-                        UpdateInventoryFromOrders();
+                        Payment pay = new Payment();
+                        pay.Id= item.Id;
+                        pay.OrderId = order.OrderId;
+                        pay.PaymentStatus = "paid";
+                        pay.paymenttypeId = PaymentTypeId;
+                        pay.TotalAmount = order.totalamount;
+                        pay.CreateDate=DateTime.Now;
+                        pay.Lastmodifield = DateTime.Now;
+                        _context.payments.Add(pay);
+                        _context.SaveChanges();
+                         OrderSendConfirmEmail(customer, cartItems);
                         return RedirectToAction("Home","Client");
                     }
                 }
                 return View();
             }
             return View();
+        }
+        //orderconfirmemailsend
+        public void OrderSendConfirmEmail(Customer cust,List<ShoppingCart> cart)
+        {
+            string emailBody = $"Dear {cust.Name},\n\n";
+            emailBody += $"{cust.Email},\n\n";
+            emailBody += $"{cust.address},\n\n";
+            emailBody += $"{cust.Number},\n\n";
+
+
+            foreach (var item in cart)
+            {
+                emailBody += $"Product:{item.productId},Quantity:{item.qty},Total:{item.bill}\n\n";
+            }
+
+            emailBody += "\n\nRegards,\nYour Company";
+
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress("email@gmail.com");
+                mail.To.Add(cust.Email);
+                mail.Subject = "Order Confirmation";
+                mail.Body = emailBody;
+                mail.IsBodyHtml = true;
+
+                using (SmtpClient smtp = new SmtpClient())
+                {
+                    smtp.Host = "smtp.gmail.com";
+                    smtp.EnableSsl = true;
+                    NetworkCredential credential = new NetworkCredential(cust.Email, "slgdcoyxolrrusmt");
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = credential;
+                    smtp.Port = 587;
+                    smtp.Send(mail);
+                }
+
+            }
+
         }
         public IActionResult Customer()
         {
@@ -578,7 +688,6 @@ namespace PlantNests.Controllers
             }
             return View();
         }
-
         [HttpGet]
         public IActionResult Contact()
         {
@@ -624,79 +733,7 @@ namespace PlantNests.Controllers
             HttpContext.Session.Remove("id");
             return RedirectToAction("custLogin", "Client");
         }
-        public void UpdateInventoryFromOrders()
-        {
-            // Get all orders
-            var orders = _context.orders.ToList();
-
-            foreach (var order in orders)
-            {
-                // Get the product from the inventory
-                var inventoryItem = _context.inventories.FirstOrDefault(i => i.productId == order.productId);
-
-                if (inventoryItem != null)
-                {
-                    // Update the inventory by reducing the quantity
-                    inventoryItem.Inqty -= order.quantity;
-
-                    // Ensure the quantity doesn't go below zero
-                    if (inventoryItem.Inqty < 0)
-                    {
-                        inventoryItem.Inqty = 0;
-                    }
-
-                    // Update the last modified date
-                    inventoryItem.Lastmodifield = DateTime.Now;
-
-                    // Log the sold record
-                    var soldRecord = new SoldProduct
-                    {
-                        productId = order.productId,
-                        OrderId = order.OrderId,
-                        quantitysold = order.quantity,
-                        solddate = DateTime.Now,
-                        TotalAmount = order.totalamount
-                    };
-                    _context.soldProducts.Add(soldRecord);
-                }
-                else
-                {
-                    // If the product doesn't exist in the inventory, add it with the initial quantity minus the order quantity
-                    var newInventoryItem = new Inventory
-                    {
-                        productId = order.productId,
-                        Id = order.Id,
-                        OrderId = order.OrderId,
-                        totalqty = 3, // Assuming you start with 3 units for each product
-                        Inqty = 3 - order.quantity, // Initial quantity minus the order quantity
-                        totalamount = order.totalamount,
-                        CreateDate = DateTime.Now,
-                        Lastmodifield = DateTime.Now
-                    };
-
-                    if (newInventoryItem.Inqty < 0)
-                    {
-                        newInventoryItem.Inqty = 0;
-                    }
-
-                    _context.inventories.Add(newInventoryItem);
-
-                    // Log the sold record
-                    var soldRecord = new SoldProduct
-                    {
-                        productId = order.productId,
-                        OrderId = order.OrderId,
-                        quantitysold = order.quantity,
-                        solddate = DateTime.Now,
-                        TotalAmount = order.totalamount
-                    };
-                    _context.soldProducts.Add(soldRecord);
-                }
-            }
-
-            // Save all changes to the database
-            _context.SaveChanges();
-        }
+     
         [HttpPost]
         public IActionResult Rating(int productid,int rating)
         {
@@ -718,7 +755,6 @@ namespace PlantNests.Controllers
             return RedirectToAction("Home", "Client");
 
         }
-
 
     }
 }

@@ -17,8 +17,8 @@
     <link rel="stylesheet" href="~/Clientsite/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script></script>
 </head>
+
 <body>
 
     <div class="preloader d-flex align-items-center justify-content-center">
@@ -43,9 +43,28 @@
                                         var user= ViewContext.HttpContext.Session.GetString("id");
 
                                     }
+                                   
                                     @if (user!=null)
+                                                                           
                                     {
-                                        <span>@ViewBag.UserName</span>
+
+                                       
+                                        <span onclick="myFunction()">@ViewBag.UserName</span>
+
+                                        <select id="myDropdown" onchange="setOrderId(this.value)" style="display:none;">
+                                            <option>ShowOrders---</option>
+
+                                            @if (ViewBag.ordershow != null)
+                                            {
+                                                foreach (var item in ViewBag.ordershow)
+                                                {
+                                                    <option value="@item.OrderId" name="orderid">@item.Status</option>
+                                                                                              
+                                                }
+                                                
+                                            }
+                                        </select>
+
                                     }
                                    
                                     
@@ -65,20 +84,20 @@
                                 }
                                 else
                                 {
-                                    <form asp-action="LogOut" method="post">
-                                        <button type="submit" class="btn btn-white">
-                                            <i class="fa fa-user" aria-hidden="true"></i> <span>LogOut</span>
+                                  <div class="login">
+                                    <form method="post" asp-action="LogOut" asp-controller="Client">
+                                        <button type="submit" class="btn btn-link">
+                                        <i class="fa fa-user" style="color:#76c376;font-size:12px;" aria-hidden="true"></i><span class=" text-white" style="font-size:12px; font-weight:400px;line-height:1;display:inline-block;">LogOut</span>
                                         </button>
                                     </form>
-
+                                  </div>
 
                                 }
                                 <!-- Cart -->
                                     <div class="cart">
                                         <a href="@Url.Action("CheckOut","Client")"><i class="fa fa-shopping-cart" aria-hidden="true"></i> <span>Cart <span class="cart-quantity">@ViewBag.count</span></span></a>
                                     </div>
-                                </div>
-                          
+                                </div>            
                         </div>
                     </div>
                 </div>
@@ -155,11 +174,9 @@
                             </div>
                             <p>Lorem ipsum dolor sit samet, consectetur adipiscing elit. India situs atione mantor</p>
                             <div class="social-info">
-                                <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-                                <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-                                <a href="#"><i class="fa fa-google-plus" aria-hidden="true"></i></a>
-                                <a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a>
-                                <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+                                <a href="https://www.facebook.com"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                                <a href="https://www.google.com"><i class="fa fa-google-plus" aria-hidden="true"></i></a>
+                                <a href="https://www.instagram.com"><i class="fa fa-instagram" aria-hidden="true"></i></a>
                             </div>
                         </div>
                     </div>
@@ -172,13 +189,16 @@
                             </div>
                             <nav class="widget-nav">
                                 <ul>
-                                    <form asp-action="OrderCancelled" asp-controller="Product" method="post">
-
-                                    <li><input type="submit" onclick="return confirm('are you show you wnat cancellde order')" value="Return" /></li>
-                                    </form>
+                                    <form asp-action="OrderCancelledEmailAdmin" asp-controller="Product" method="post">
+                                        <input type="hidden" id="selectedOrderId" name="orderid"/>
+                                        <button type="submit" class="btn btn-link">
+                                         <li style="display:inline-block;color:darkgray">Return</li>
+                                          </button>
+                          
                                     <li><a href="#">Shipping</a></li>
                                     <li><a href="#">Career</a></li>
                                     <li><a href="#">Orders</a></li>
+                                    </form>
                                 </ul>
                             </nav>
                         </div>
@@ -268,5 +288,23 @@
     <script src="~/Clientsite/js/plugins/plugins.js"></script>
     <!-- Active js -->
     <script src="~/Clientsite/js/active.js"></script>
+
+   
+
 </body>
+    <script>
+
+        function setOrderId(orderId) {
+            document.getElementById('selectedOrderId').value = orderId;
+        }
+
+        function myFunction() {
+            var dropdown = document.getElementById("myDropdown");
+            if (dropdown.style.display === "none" || dropdown.style.display === "") {
+                dropdown.style.display = "block";
+            } else {
+                dropdown.style.display = "none";
+            }
+        }
+    </script>
 </html>

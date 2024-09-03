@@ -3,41 +3,41 @@
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
 
-<style>
+    <style>
 
-    .form-group small {
-        color: var(--error-color);
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        visibility: hidden;
-    }
+        .form-group small {
+            color: var(--error-color);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            visibility: hidden;
+        }
 
-    .form-group.success input {
-        border-color: var(--succes-color);
-    }
+        .form-group.success input {
+            border-color: var(--succes-color);
+        }
 
-    .form-group.error input {
-        border-color: var(--error-color);
-    }
+        .form-group.error input {
+            border-color: var(--error-color);
+        }
 
-    .form-group.error small {
-        visibility: visible;
-    }
+        .form-group.error small {
+            visibility: visible;
+        }
 
-    .borderform {
-        border-radius: 50px;
-        padding: 30px;
-    }
+        .borderform {
+            border-radius: 50px;
+            padding: 30px;
+        }
 
-    .btn btn-primary {
-        border-radius: 20px;
-        margin: 0;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-    }
-</style>
+        .btn btn-primary {
+            border-radius: 20px;
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+        }
+    </style>
 
 
 <div class="breadcrumb-area">
@@ -66,7 +66,7 @@
         <div class="row justify-content-between">
             <div class="col-12 col-lg-7">
                 <div class="checkout_details_area clearfix">
-                    <h5>Billing Details</h5>
+                    <h5>Create an Account</h5>
                     <form method="post" asp-action="Customer" id="form">
                         <div class="row">
                             <div class="col-12 mb-4 form-group">
@@ -97,7 +97,7 @@
 
                         </div>
                         <div class="checkout-btn mt-30">
-                            <button type="button" class="btn alazea-btn w-100" onclick="submitForm()">Place Order</button>
+                            <button type="button" class="btn alazea-btn w-100" onclick="submitForm()">Register</button>
                         </div>
                     </form>
                 </div>
@@ -141,91 +141,92 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-    function submitForm() {
-        const form = document.getElementById('form');
-        const CustName = document.getElementById('first_name');
-        const email = document.getElementById('email');
-        const password = document.getElementById('password');
-        const number = document.getElementById('number');
-        const address = document.getElementById('add');
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
 
-        // Show input error messages
-        function showError(input, message) {
-            const formControl = input.parentElement;
-            formControl.className = 'col-md-6 form-group error';
-            const small = formControl.querySelector('small');
-            small.innerText = message;
-        }
+    <script>
+        function submitForm() {
+            const form = document.getElementById('form');
+            const CustName = document.getElementById('first_name');
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            const number = document.getElementById('number');
+            const address = document.getElementById('add');
 
-        // Show success color
-        function showSuccess(input) {
-            const formControl = input.parentElement;
-            formControl.className = 'col-md-6 form-group success';
-        }
-
-        // Check email is valid
-        function checkEmail(input) {
-            const re = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-            if (input.value.trim() === '') {
-                showError(input, 'Email is required');
-            } else if (re.test(input.value.trim())) {
-                showSuccess(input);
-            } else {
-                showError(input, 'Email is not valid');
+            // Show input error messages
+            function showError(input, message) {
+                const formControl = input.parentElement;
+                formControl.className = 'col-md-6 form-group error';
+                const small = formControl.querySelector('small');
+                small.innerText = message;
             }
-        }
 
-        function checkPassword(input) {
-            const password = input.value.trim();
-            if (password === '') {
-                showError(input, 'Password is required');
-            } else if (password.length < 10) {
-                showError(input, 'Password must be at least 10 characters');
-            } else {
-                showSuccess(input);
+            // Show success color
+            function showSuccess(input) {
+                const formControl = input.parentElement;
+                formControl.className = 'col-md-6 form-group success';
             }
-        }
 
-        // Check required fields
-        function checkRequired(inputArr) {
-            inputArr.forEach(function (input) {
+            // Check email is valid
+            function checkEmail(input) {
+                const re = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
                 if (input.value.trim() === '') {
-                    showError(input, `${getFieldName(input)} is required`);
+                    showError(input, 'Email is required');
+                } else if (re.test(input.value.trim())) {
+                    showSuccess(input);
+                } else {
+                    showError(input, 'Email is not valid');
+                }
+            }
+
+            function checkPassword(input) {
+                const password = input.value.trim();
+                if (password === '') {
+                    showError(input, 'Password is required');
+                } else if (password.length < 10) {
+                    showError(input, 'Password must be at least 10 characters');
                 } else {
                     showSuccess(input);
                 }
-            });
-        }
+            }
 
-        // Check input Length
-        function checkLength(input, min, max) {
-            if (input.value.length < min) {
-                showError(input, `${getFieldName(input)} must be at least ${min} characters`);
-            } else if (input.value.length > max) {
-                showError(input, `${getFieldName(input)} must be less than ${max} characters`);
-            } else {
-                showSuccess(input);
+            // Check required fields
+            function checkRequired(inputArr) {
+                inputArr.forEach(function (input) {
+                    if (input.value.trim() === '') {
+                        showError(input, `${getFieldName(input)} is required`);
+                    } else {
+                        showSuccess(input);
+                    }
+                });
+            }
+
+            // Check input Length
+            function checkLength(input, min, max) {
+                if (input.value.length < min) {
+                    showError(input, `${getFieldName(input)} must be at least ${min} characters`);
+                } else if (input.value.length > max) {
+                    showError(input, `${getFieldName(input)} must be less than ${max} characters`);
+                } else {
+                    showSuccess(input);
+                }
+            }
+
+            // Get FieldName
+            function getFieldName(input) {
+                return input.id.charAt(0).toUpperCase() + input.id.slice(1);
+            }
+
+            // Validate form fields
+            checkRequired([CustName, email, password, number, address]);
+            checkLength(CustName, 3, 15);
+            checkPassword(password);
+            checkEmail(email);
+
+            // Check if there are any errors
+            if (document.querySelectorAll('.form-group.error').length === 0) {
+                // If no errors, submit the form
+                form.submit();
             }
         }
-
-        // Get FieldName
-        function getFieldName(input) {
-            return input.id.charAt(0).toUpperCase() + input.id.slice(1);
-        }
-
-        // Validate form fields
-        checkRequired([CustName, email, password, number, address]);
-        checkLength(CustName, 3, 15);
-        checkPassword(password);
-        checkEmail(email);
-
-        // Check if there are any errors
-        if (document.querySelectorAll('.form-group.error').length === 0) {
-            // If no errors, submit the form
-            form.submit();
-        }
-    }
-</script>
+    </script>

@@ -1,6 +1,7 @@
 ﻿
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PlantNests.Models
 {
@@ -9,8 +10,11 @@ namespace PlantNests.Models
         [Key]
         public int cartId { get; set; }
         public int productId { get; set; }
-        public int Id { get; set; }
-        public virtual Product Product { get; set;}
+        public virtual Product Product { get; set; }
+
+        [ForeignKey("Customer")]
+        public int Id { get; set;}
+        public virtual Customer Customer { get; set; }  
         public int price { get; set; }  
         public int qty { get; set; }    
         public int bill { get; set; }
